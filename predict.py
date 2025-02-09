@@ -5,24 +5,13 @@ from PIL import Image
 import os
 import logging
 from fastapi.encoders import jsonable_encoder
-from tensorflow.keras.utils import custom_object_scope
-from tensorflow.keras.mixed_precision import Policy
 
-def custom_input_layer_from_config(**config):
-    # 'batch_shape' anahtarını 'batch_input_shape' olarak değiştiriyoruz.
-    if 'batch_shape' in config:
-        config['batch_input_shape'] = config.pop('batch_shape')
-    return tensorflow.keras.layers.InputLayer(**config)
 
 def load_model():
     model_path = os.path.join(os.path.dirname(__file__), 'model.h5')
     logging.debug(f"Loading model from path: {model_path}")
-    # custom_object_scope içine hem InputLayer hem de DTypePolicy nesnesini ekliyoruz.
-    with custom_object_scope({
-            "InputLayer": custom_input_layer_from_config,
-            "DTypePolicy": Policy
-        }):
-        model = tensorflow.keras.models.load_model(model_path)
+    
+    model = tensorflow.keras.models.load_model(model_path)
     return model
 
 def read_image(image_encoded: bytes):
